@@ -10,7 +10,7 @@
   --header-color: #0e172c;
   --header-shadow: #a786df;
   --normal-font: 1.5rem;
-  --title-font: 6rem;
+  --title-font: 5rem;
   --medium-font: 2.5rem;
   --button-font-size: 1.1rem;
 }
@@ -27,12 +27,12 @@ body {
   background-color: var(--background);
   display: flex;
   justify-content: center;
-
   font-family: Arial, Helvetica, sans-serif;
 }
 
 #root {
   flex-basis: 75%;
+  margin-bottom: 2rem;
 }
 
 .title-text {
@@ -118,11 +118,8 @@ label {
   opacity: 0;
 }
 
+input:not(:placeholder-shown) + label,
 input:focus + label {
-  top: -14px;
-}
-
-input:not(:placeholder-shown) + label {
   top: -14px;
 }
 
@@ -152,7 +149,8 @@ input:not(:placeholder-shown) + label {
 .cards {
   margin-top: 2rem;
   display: flex;
-  justify-content: space-between;
+  justify-content: center;
+  gap: 10px;
 }
 
 .card-container p {
@@ -164,6 +162,21 @@ input:not(:placeholder-shown) + label {
   padding: 20px;
   flex-basis: 32%;
   text-align: center;
+}
+
+.clear {
+  border: none;
+  cursor: pointer;
+  padding: 0px 30px;
+  border-radius: 20px;
+  font-size: 1rem;
+  background: var(--green);
+  font-weight: bold;
+  transition: 0.3s;
+}
+
+.clear:hover {
+  background-color: var(--green-hover);
 }
 
 #budget {
@@ -219,4 +232,19 @@ td {
 }
 .edit-btn button:hover {
   background: var(--green-hover);
+}
+
+@media screen and (max-width: 700px) {
+  .title-text {
+    font-size: 2.5rem;
+  }
+
+  .card-container {
+    padding: 10px;
+    flex-basis: 50%;
+  }
+
+  .card-container p {
+    font-size: 1rem;
+  }
 }

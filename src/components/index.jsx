@@ -1,9 +1,12 @@
-import { useState, useRef, useReducer, useEffect } from "react";
+import { useState, useReducer, useEffect, useRef } from "react";
 import { Link } from "react-router-dom";
 import Card from "../card";
 import Swal from "sweetalert2";
 
-const reducer = (state, { action, name, amount, object, budget, index }) => {
+const reducer = (
+  state,
+  { action, name, amount, object, budget, index, myExpense }
+) => {
   switch (action) {
     case "add":
       if (budget == 0 || amount > budget) {
@@ -37,6 +40,13 @@ const reducer = (state, { action, name, amount, object, budget, index }) => {
         JSON.stringify({ name: name, amount: amount })
       );
 
+      const tempExpense = parseFloat(amount) + parseFloat(myExpense);
+
+      localStorage.setItem(
+        "total_expense",
+        JSON.stringify({ amount: tempExpense })
+      );
+
       Swal.fire({
         title: "Added Expense!",
         icon: "success",
@@ -55,6 +65,8 @@ const reducer = (state, { action, name, amount, object, budget, index }) => {
       });
 
       return state;
+    default:
+      return [];
   }
 };
 
@@ -63,13 +75,25 @@ export default function Index() {
   const [expenseName, handleExpenseName] = useState("");
   const [amount, handleAmount] = useState(0);
   const [budget, handleBudget] = useState(0);
-  const [expense, handleExpense] = useState(0);
+  const [myExpense, handleExpense] = useState({ amount: 0 });
+  const btn = useRef();
 
   useEffect(() => {
     const newBudget = JSON.parse(localStorage.getItem("budget"))
       ? JSON.parse(localStorage.getItem("budget")).amount
       : 0;
     handleBudget(newBudget);
+
+    const newExpense = JSON.parse(localStorage.getItem("total_expense"))
+      ? JSON.parse(localStorage.getItem("total_expense")).amount
+      : 0;
+
+    handleExpense((myExpense) => {
+      return {
+        ...myExpense,
+        amount: newExpense,
+      };
+    });
   }, [expenses]);
 
   useEffect(() => {
@@ -79,13 +103,29 @@ export default function Index() {
           localStorage.getItem(localStorage.key(index))
         );
 
-        if (!object.budget) {
+        const objKey = localStorage.key(index);
+
+        if (objKey !== "budget" && objKey !== "total_expense") {
           dispatch({ action: "addList", object: object });
         }
       }
     };
 
     pushLocalStorageData();
+  }, []);
+
+  useEffect(() => {
+    const clear = () => {
+      localStorage.clear();
+      dispatch({});
+      console.log("clciked");
+    };
+
+    btn.current.addEventListener("click", clear);
+
+    return () => {
+      btn.current.removeEventListener("click", clear);
+    };
   }, []);
 
   return (
@@ -138,6 +178,7 @@ export default function Index() {
               name: expenseName,
               amount: amount,
               budget: budget,
+              myExpense: myExpense.amount,
             });
           }}
         >
@@ -147,8 +188,10 @@ export default function Index() {
 
       <div className="cards">
         <Card id="budget" title="Budget" amount={budget} />
-        <Card id="balance" title="Balance" amount={500} />
-        <Card id="expenses" title="Total Expenses" amount={500} />
+        <Card id="expenses" title="Total Expenses" amount={myExpense.amount} />
+        <button className="clear" ref={btn}>
+          Clear
+        </button>
       </div>
 
       <table className="expense-table">

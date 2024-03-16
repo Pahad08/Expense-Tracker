@@ -48,7 +48,7 @@ export default function AddBudget() {
             }}
           />
           <label htmlFor="expense-name" id="expense-label">
-            Expense Name
+            Budget Amount
           </label>
         </div>
 
