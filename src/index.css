@@ -1,0 +1,222 @@
+:root {
+  --background: #fec7d7;
+  --red: #dc3545;
+  --red-hover: #a52734;
+  --blue: #0d6efd;
+  --blue-hover: #1d5cba;
+  --green: #198754;
+  --green-hover: #196843;
+  --main-color: #0e172c;
+  --header-color: #0e172c;
+  --header-shadow: #a786df;
+  --normal-font: 1.5rem;
+  --title-font: 6rem;
+  --medium-font: 2.5rem;
+  --button-font-size: 1.1rem;
+}
+
+*,
+*::after,
+*::before {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  background-color: var(--background);
+  display: flex;
+  justify-content: center;
+
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+#root {
+  flex-basis: 75%;
+}
+
+.title-text {
+  font-family: "Style Script", cursive;
+  font-size: var(--title-font);
+  font-weight: bold;
+  color: var(--header-color);
+  text-shadow: 3px 3px var(--header-shadow);
+  text-align: center;
+}
+
+.title-text::selection {
+  background: none;
+}
+
+a {
+  text-decoration: none;
+  color: var(--blue);
+}
+
+a:hover {
+  color: var(--blue-hover);
+}
+
+.router {
+  margin-top: 3rem;
+  text-align: center;
+  font-size: var(--normal-font);
+  font-weight: 600;
+}
+
+.expense-form,
+.budget-form {
+  margin-top: 3rem;
+  display: flex;
+  gap: 10px;
+}
+
+.budget-form {
+  justify-content: center;
+}
+
+.budget-form .input-container {
+  flex-basis: 50%;
+}
+
+.expense-form input,
+.budget-form input {
+  padding: 5px;
+  background: var(--background);
+  border: none;
+  outline: none;
+  border-bottom: 2px solid var(--header-color);
+  font-size: 1rem;
+}
+
+.input-container {
+  position: relative;
+}
+
+.expense-form .input-container:nth-child(1) {
+  flex-basis: 60%;
+}
+
+#expense-name,
+#expense-amount {
+  width: 100%;
+}
+
+label {
+  position: absolute;
+  left: 5px;
+  top: 5px;
+  z-index: 1;
+  cursor: auto;
+  transition: 0.5s;
+  font-weight: bold;
+  color: var(--main-color);
+}
+
+#expense-name::placeholder,
+#expense-amount::placeholder {
+  opacity: 0;
+}
+
+input:focus + label {
+  top: -14px;
+}
+
+input:not(:placeholder-shown) + label {
+  top: -14px;
+}
+
+.expense-form .input-container:nth-child(2) {
+  flex-basis: 30%;
+}
+
+.expense-form button,
+.budget-form button {
+  flex-basis: 10%;
+}
+
+.add-btn {
+  border: none;
+  cursor: pointer;
+  background: var(--blue);
+  border-radius: 5px;
+  font-size: var(--button-font-size);
+  transition: 0.3s;
+  color: var(--main-color);
+}
+
+.add-btn:hover {
+  background: var(--blue-hover);
+}
+
+.cards {
+  margin-top: 2rem;
+  display: flex;
+  justify-content: space-between;
+}
+
+.card-container p {
+  font-size: var(--button-font-size);
+}
+
+.card-container {
+  border-radius: 20px;
+  padding: 20px;
+  flex-basis: 32%;
+  text-align: center;
+}
+
+#budget {
+  background: var(--blue);
+}
+
+#balance {
+  background: var(--green);
+}
+
+#expenses {
+  background: var(--red);
+}
+
+table {
+  margin-top: 2rem;
+  width: 100%;
+  border-collapse: collapse;
+}
+
+th,
+td {
+  text-align: left;
+  padding: 10px;
+  color: var(--main-color);
+  border-bottom: 1px solid;
+}
+
+.delete-btn button {
+  border: none;
+  cursor: pointer;
+  background: var(--red);
+  border-radius: 3px;
+  font-size: var(--button-font-size);
+  transition: 0.3s;
+  color: var(--main-color);
+  padding: 3px 10px;
+}
+
+.delete-btn button:hover {
+  background: var(--red-hover);
+}
+
+.edit-btn button {
+  border: none;
+  cursor: pointer;
+  background: var(--green);
+  border-radius: 3px;
+  font-size: var(--button-font-size);
+  transition: 0.3s;
+  color: var(--main-color);
+  padding: 3px 10px;
+}
+.edit-btn button:hover {
+  background: var(--green-hover);
+}
