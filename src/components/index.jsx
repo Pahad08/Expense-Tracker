@@ -1,11 +1,12 @@
 import { useState, useReducer, useEffect, useRef } from "react";
 import { Link } from "react-router-dom";
-import Card from "../card";
+import Card from "./card.jsx";
+import Input from "./input.jsx";
 import Swal from "sweetalert2";
 
 const reducer = (
   state,
-  { action, name, amount, object, budget, index, myExpense }
+  { action, name, amount, date, object, budget, index, myExpense }
 ) => {
   switch (action) {
     case "add":
@@ -52,7 +53,7 @@ const reducer = (
         icon: "success",
       });
 
-      return [{ name: name, amount: amount }, ...state];
+      return [{ name: name, amount: amount, date: date }, ...state];
 
     case "addList":
       return [...state, object];
@@ -71,12 +72,54 @@ const reducer = (
 };
 
 export default function Index() {
+  const months = [
+    "January",
+    "February",
+    "March",
+    "April",
+    "May",
+    "June",
+    "July",
+    "August",
+    "September",
+    "October",
+    "November",
+    "December",
+  ];
   const [expenses, dispatch] = useReducer(reducer, []);
   const [expenseName, handleExpenseName] = useState("");
   const [amount, handleAmount] = useState(0);
   const [budget, handleBudget] = useState(0);
   const [myExpense, handleExpense] = useState({ amount: 0 });
+  const [date, handleDate] = useState("");
   const btn = useRef();
+  const intervalRef = useRef(0);
+
+  useEffect(() => {
+    intervalRef.current = setInterval(() => {
+      const newDate = new Date();
+      const year = newDate.getFullYear();
+      const month = months[newDate.getMonth()];
+      const date = newDate.getDate();
+      const hours =
+        newDate.getHours() % 12 == 0 ? 12 : "0" + (newDate.getHours() % 12);
+      const minute =
+        newDate.getMinutes() > 10
+          ? newDate.getMinutes()
+          : "0" + newDate.getMinutes();
+      const meridiem = hours >= 12 ? "PM" : "AM";
+      const time = `${hours}:${minute}`;
+      const fullDate = `${month} ${date} ${year} ${time} ${meridiem}`;
+
+      handleDate((date) => (date = fullDate));
+    }, 1000);
+
+    const intervalId = intervalRef.current;
+
+    return () => {
+      clearInterval(intervalId);
+    };
+  });
 
   useEffect(() => {
     const newBudget = JSON.parse(localStorage.getItem("budget"))
@@ -124,7 +167,9 @@ export default function Index() {
     btn.current.addEventListener("click", clear);
 
     return () => {
-      btn.current.removeEventListener("click", clear);
+      if (btn.current) {
+        btn.current.removeEventListener("click", clear);
+      }
     };
   }, []);
 
@@ -142,32 +187,30 @@ export default function Index() {
 
       <form className="expense-form">
         <div className="input-container">
-          <input
+          <Input
             type="text"
-            id="expense-name"
+            inputId="expense-name"
             placeholder="Expense Name"
-            onChange={(e) => {
-              handleExpenseName(e.target.value);
-            }}
+            functionHandle={handleExpenseName}
+            label="expense-name"
+            labelId="expense-label"
+            labelName="Expense Name"
           />
-          <label htmlFor="expense-name" id="expense-label">
-            Expense Name
-          </label>
         </div>
 
         <div className="input-container">
-          <input
+          <Input
             type="number"
-            id="expense-amount"
+            inputId="expense-amount"
             placeholder="Amount"
-            onChange={(e) => {
-              handleAmount(e.target.value);
-            }}
+            functionHandle={handleAmount}
+            label="expense-amount"
+            labelId="amount-label"
+            labelName="Amount"
           />
-          <label htmlFor="expense-amount" id="amount-label">
-            Amount
-          </label>
         </div>
+
+        <input type="text" defaultValue={date} hidden />
 
         <button
           className="add-btn"
@@ -177,6 +220,7 @@ export default function Index() {
               action: "add",
               name: expenseName,
               amount: amount,
+              date: date,
               budget: budget,
               myExpense: myExpense.amount,
             });
@@ -199,6 +243,7 @@ export default function Index() {
           <tr>
             <th>Expense Name</th>
             <th>Amount</th>
+            <th>Date</th>
             <th>Edit</th>
             <th>Delete</th>
           </tr>
@@ -210,6 +255,7 @@ export default function Index() {
               <tr key={index}>
                 <td>{element.name}</td>
                 <td>{element.amount}</td>
+                <td>{element.date}</td>
                 <td className="delete-btn">
                   <button
                     onClick={() => {
