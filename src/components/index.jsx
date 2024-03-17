@@ -4,6 +4,43 @@ import Card from "./card.jsx";
 import Input from "./input.jsx";
 import Swal from "sweetalert2";
 
+const getDate = () => {
+  const months = [
+    "January",
+    "February",
+    "March",
+    "April",
+    "May",
+    "June",
+    "July",
+    "August",
+    "September",
+    "October",
+    "November",
+    "December",
+  ];
+
+  const newDate = new Date();
+  const year = newDate.getFullYear();
+  const month = months[newDate.getMonth()];
+  const date = newDate.getDate();
+  const hours =
+    newDate.getHours() % 12 == 0 ? 12 : addZero(newDate.getHours() % 12);
+  const minute =
+    newDate.getMinutes() > 10
+      ? newDate.getMinutes()
+      : addZero(newDate.getMinutes());
+  const meridiem = hours >= 12 ? "PM" : "AM";
+  const time = `${hours}:${minute}`;
+  const fullDate = `${month} ${date} ${year} ${time} ${meridiem}`;
+
+  return fullDate;
+};
+
+const addZero = (date) => {
+  return "0" + date;
+};
+
 const reducer = (
   state,
   { action, name, amount, date, object, budget, index, myExpense }
@@ -38,7 +75,7 @@ const reducer = (
 
       localStorage.setItem(
         name,
-        JSON.stringify({ name: name, amount: amount })
+        JSON.stringify({ name: name, amount: amount, date: getDate() })
       );
 
       const tempExpense = parseFloat(amount) + parseFloat(myExpense);
@@ -53,7 +90,7 @@ const reducer = (
         icon: "success",
       });
 
-      return [{ name: name, amount: amount, date: date }, ...state];
+      return [{ name: name, amount: amount, date: getDate() }, ...state];
 
     case "addList":
       return [...state, object];
@@ -72,54 +109,12 @@ const reducer = (
 };
 
 export default function Index() {
-  const months = [
-    "January",
-    "February",
-    "March",
-    "April",
-    "May",
-    "June",
-    "July",
-    "August",
-    "September",
-    "October",
-    "November",
-    "December",
-  ];
   const [expenses, dispatch] = useReducer(reducer, []);
   const [expenseName, handleExpenseName] = useState("");
   const [amount, handleAmount] = useState(0);
   const [budget, handleBudget] = useState(0);
   const [myExpense, handleExpense] = useState({ amount: 0 });
-  const [date, handleDate] = useState("");
-  const btn = useRef();
-  const intervalRef = useRef(0);
-
-  useEffect(() => {
-    intervalRef.current = setInterval(() => {
-      const newDate = new Date();
-      const year = newDate.getFullYear();
-      const month = months[newDate.getMonth()];
-      const date = newDate.getDate();
-      const hours =
-        newDate.getHours() % 12 == 0 ? 12 : "0" + (newDate.getHours() % 12);
-      const minute =
-        newDate.getMinutes() > 10
-          ? newDate.getMinutes()
-          : "0" + newDate.getMinutes();
-      const meridiem = hours >= 12 ? "PM" : "AM";
-      const time = `${hours}:${minute}`;
-      const fullDate = `${month} ${date} ${year} ${time} ${meridiem}`;
-
-      handleDate((date) => (date = fullDate));
-    }, 1000);
-
-    const intervalId = intervalRef.current;
-
-    return () => {
-      clearInterval(intervalId);
-    };
-  });
+  const btn = useRef(null);
 
   useEffect(() => {
     const newBudget = JSON.parse(localStorage.getItem("budget"))
@@ -210,8 +205,6 @@ export default function Index() {
           />
         </div>
 
-        <input type="text" defaultValue={date} hidden />
-
         <button
           className="add-btn"
           onClick={(e) => {
@@ -220,7 +213,6 @@ export default function Index() {
               action: "add",
               name: expenseName,
               amount: amount,
-              date: date,
               budget: budget,
               myExpense: myExpense.amount,
             });
@@ -244,8 +236,8 @@ export default function Index() {
             <th>Expense Name</th>
             <th>Amount</th>
             <th>Date</th>
-            <th>Edit</th>
             <th>Delete</th>
+            <th>Edit</th>
           </tr>
         </thead>
 
